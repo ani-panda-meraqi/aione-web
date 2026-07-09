@@ -2,10 +2,13 @@
 
 Static legal-entity site for **aionellc.com**, deployed on Cloudflare Pages (git-connected).
 Hosts the AiOne homepage and the three policy pages that 10DLC / A2P registration requires.
-Pure static: no build step, no functions, no bindings.
+No build step. One Worker (`worker.js`) serves the static files plus a single API route,
+`POST /api/contact`, backed by a D1 database (see Contact form below).
 
 ```
-index.html      Homepage (links to Meraqi + the policies)
+index.html      Homepage (links to Meraqi + the policies; contact form)
+worker.js       Worker entry: static assets + POST /api/contact -> D1
+schema.sql      D1 schema for contact-form messages
 terms.html      Terms of Service   (governing-law county filled: King, WA)
 privacy.html    Privacy Policy      <- carrier-required SMS clause
 cookies.html    Cookie Policy
@@ -26,8 +29,39 @@ Privacy, and Cookie, so this is the single source of truth (no policy drift).
   accepted there).
 - Have counsel review before go-live. Not legal advice.
 
-Contact emails default to `hello@`, `privacy@`, and `legal@aionellc.com`. Cloudflare
-**Email Routing** (free) forwards those to your inbox without a paid mailbox.
+Contact emails on the pages: `hello@` (general) and `legal@aionellc.com` (canonical for
+privacy & legal; `privacy@` and `postmaster@` exist as aliases). The role-based set per
+domain also includes info@, product@, sales@, investment@, press@, security@, fraud@,
+complaint@, support@, billing@, comments@, admin@, no-reply@. A security.txt lives at
+`.well-known/security.txt` (Contact: security@; expires 2027-07-01, refresh yearly). The
+addresses are **Google Groups** in Google Workspace (postmaster@/abuse@ cannot be user
+accounts or aliases; groups with those names are Google's documented approach). Role groups
+need External posting allowed, spam handling "Post directly", and private archives.
+
+## Contact form
+
+The homepage form POSTs JSON to `/api/contact` (handled in `worker.js`) and stores messages
+in the `aione-contact` D1 database. Protections: hidden honeypot field (bot submissions are
+accepted silently and discarded), server-side validation and length caps, topic restricted
+to a fixed enum. Deliberately stored: name (optional), email, topic, message, source_site,
+timestamp. Deliberately NOT stored: IP address, user agent. The messages table is shared
+company-wide: meraqi.ai binds the same `aione-contact` database when its contact form ships,
+and `source_site` records which site each message came from.
+
+One-time setup:
+
+1. `npx wrangler d1 create aione-contact` — copy the printed `database_id` into
+   `wrangler.jsonc` (replacing `PASTE_DATABASE_ID_HERE`).
+2. `npx wrangler d1 execute aione-contact --remote --file=./schema.sql`
+
+Read messages:
+
+    npx wrangler d1 execute aione-contact --remote --command "SELECT id, created_at, source_site, topic, name, email, substr(message,1,120) AS preview FROM messages ORDER BY id DESC LIMIT 20"
+
+Note: the API route requires the Workers deploy path (`npx wrangler deploy`, matching
+`wrangler.jsonc` with `main` + `assets`). If the project is still deployed via git-connected
+Pages (section below), the handler must be ported to Pages Functions form
+(`functions/api/contact.js`) instead — the static form itself works either way.
 
 ## Deploy (git-connected Cloudflare Pages)
 

@@ -1,2 +1,5 @@
 .git
 .wrangler
+worker.js
+schema.sql
+README.md

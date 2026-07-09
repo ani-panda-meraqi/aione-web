@@ -1,10 +1,24 @@
 {
   "name": "aione-web",
   "compatibility_date": "2026-07-01",
+  // Worker entry: handles POST /api/contact; everything else falls through to static assets.
+  "main": "worker.js",
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
   "routes": [
     { "pattern": "aionellc.com", "custom_domain": true }
+  ],
+  // Contact-form database. One-time setup:
+  //   npx wrangler d1 create aione-contact          <- prints the database_id
+  //   (paste that id below, replacing the placeholder)
+  //   npx wrangler d1 execute aione-contact --remote --file=./schema.sql
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aione-contact",
+      "database_id": "PASTE_DATABASE_ID_HERE"
+    }
   ]
 }
