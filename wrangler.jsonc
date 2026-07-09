@@ -17,8 +17,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "aione-contact",
-      "database_id": "PASTE_DATABASE_ID_HERE"
+      "database_name": "meraqi-waitlist",
+      "database_id": "f60f2428-8b8d-4640-acf0-eb1fcebffa28"
     }
   ]
 }
