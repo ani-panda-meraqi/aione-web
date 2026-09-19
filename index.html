@@ -154,8 +154,8 @@ footer .fine{color:var(--slate-dim);margin-top:12px;font-size:13px;line-height:1
         <textarea id="f-message" name="message" required maxlength="5000" rows="6" placeholder="How can we help?"></textarea>
       </div>
       <div class="hp" aria-hidden="true">
-        <label for="f-company">Company</label>
-        <input id="f-company" name="company" type="text" tabindex="-1" autocomplete="off">
+        <label for="f-hp">Leave this field empty</label>
+        <input id="f-hp" name="hp" type="text" tabindex="-1" autocomplete="off">
       </div>
       <div class="form-foot">
         <button class="btn" type="submit">Send message</button>
@@ -191,7 +191,7 @@ footer .fine{color:var(--slate-dim);margin-top:12px;font-size:13px;line-height:1
       email: document.getElementById('f-email').value.trim(),
       topic: document.getElementById('f-topic').value,
       message: document.getElementById('f-message').value.trim(),
-      company: document.getElementById('f-company').value
+      hp: document.getElementById('f-hp').value
     };
     if (!data.email || !data.message) {
       msg.textContent = 'Please fill in your email and a message.';
@@ -204,16 +204,17 @@ footer .fine{color:var(--slate-dim);margin-top:12px;font-size:13px;line-height:1
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data)
     }).then(function(r){
-      return r.json().then(function(j){ return { ok: r.ok && j && j.ok, j: j }; });
+      // Thank the visitor only when the server says the message is in the table (it reads it back first).
+      return r.json().then(function(j){ return { ok: r.ok && j && j.saved === true, j: j }; });
     }).then(function(res){
       if (res.ok) {
         form.innerHTML = '<p class="sent">Thank you. Your message is on its way, and it goes straight to the founder.</p>';
       } else {
-        msg.textContent = (res.j && res.j.error) || 'Could not send right now. Please email us instead.';
+        msg.textContent = (res.j && res.j.error) || 'Could not send right now. Please email hello@aionellc.com.';
         btn.disabled = false;
       }
     }).catch(function(){
-      msg.textContent = 'Could not send right now. Please email us instead.';
+      msg.textContent = 'Could not send right now. Please email hello@aionellc.com.';
       btn.disabled = false;
     });
   });

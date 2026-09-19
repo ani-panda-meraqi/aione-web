@@ -6,8 +6,13 @@
 //   - D1 is reachable only through this server-side code via the DB binding.
 //     The browser never touches the database.
 //   - The query is parameterized (.bind), so input cannot be injected.
-//   - Honeypot: bots fill the hidden "company" field, humans never see it;
-//     those submissions are accepted silently and stored nowhere.
+//   - Honeypot: bots fill the hidden "hp" field, humans never see it; those
+//     submissions are accepted silently, stored nowhere, and never reported as
+//     saved. The field used to be "company", which browser autofill fills, so a
+//     real message could be dropped while the page said thank you. "company" is
+//     still read for pages cached before the rename.
+//   - The inserted row is read back by its id before the response says
+//     saved: true, and the page thanks the visitor only on saved: true.
 //   - Topic is an enforced enum (TOPICS below), not just a UI dropdown.
 //   - Only what is needed to reply is stored: no IP, no user agent,
 //     and no console logging of PII.
@@ -22,7 +27,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/contact") {
-      if (request.method !== "POST") return json({ error: "Method not allowed." }, 405);
+      if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, { allow: "POST" });
       return handleContact(request, env);
     }
     return env.ASSETS.fetch(request);
@@ -37,8 +42,13 @@ async function handleContact(request, env) {
     return json({ error: "Invalid request." }, 400);
   }
 
-  if (body && typeof body.company === "string" && body.company.trim() !== "") {
-    return json({ ok: true }, 200); // honeypot hit: accept silently, store nothing
+  // Honeypot: real users never fill the hidden field; bots do. Accept silently and store
+  // nothing, but do NOT report the message as saved, so the page never thanks anyone for a
+  // message that was dropped. The field is named "hp" because browser autofill fills fields
+  // called "company"; "company" is still read for pages cached before the rename.
+  const trap = body ? (body.hp ?? body.company) : "";
+  if (typeof trap === "string" && trap.trim() !== "") {
+    return json({ ok: true }, 200);
   }
 
   const name = String((body && body.name) || "").trim().slice(0, 120);
@@ -57,23 +67,33 @@ async function handleContact(request, env) {
   }
 
   try {
-    await env.DB.prepare(
+    const res = await env.DB.prepare(
       "INSERT INTO messages (name, email, topic, message, source_site, created_at) VALUES (?, ?, ?, ?, ?, ?)"
     ).bind(name || null, email, topic, message, "aionellc.com", new Date().toISOString()).run();
+
+    // Read the row back by its id before confirming. The page says thank you only when
+    // saved is true, so that message always reflects a committed row.
+    const id = res && res.meta ? res.meta.last_row_id : null;
+    const row = id == null ? null : await env.DB.prepare(
+      "SELECT 1 AS present FROM messages WHERE id = ? LIMIT 1"
+    ).bind(id).first();
+    if (!row) {
+      return json({ error: "Could not send right now. Please email hello@aionellc.com." }, 500);
+    }
   } catch (e) {
     return json({ error: "Could not send right now. Please email hello@aionellc.com." }, 500);
   }
 
-  return json({ ok: true }, 200);
+  return json({ ok: true, saved: true }, 200);
 }
 
 function isEmail(s) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
-function json(obj, status) {
+function json(obj, status, extraHeaders) {
   return new Response(JSON.stringify(obj), {
     status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" },
+    headers: { "content-type": "application/json", "cache-control": "no-store", ...(extraHeaders || {}) },
   });
 }

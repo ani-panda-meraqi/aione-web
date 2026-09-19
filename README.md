@@ -43,7 +43,10 @@ need External posting allowed, spam handling "Post directly", and private archiv
 The homepage form POSTs JSON to `/api/contact` (handled in `worker.js`) and stores messages
 in the `aione-contact` D1 database. Protections: hidden honeypot field (bot submissions are
 accepted silently and discarded), server-side validation and length caps, topic restricted
-to a fixed enum. Deliberately stored: name (optional), email, topic, message, source_site,
+to a fixed enum. The page thanks the visitor only after the Worker reads the stored message
+back and answers `saved: true`. The honeypot field is named `hp`, because browser autofill
+fills fields called `company`, and a filled trap asks the visitor to email instead of
+thanking them. Deliberately stored: name (optional), email, topic, message, source_site,
 timestamp. Deliberately NOT stored: IP address, user agent. The messages table is shared
 company-wide: meraqi.ai binds the same `aione-contact` database when its contact form ships,
 and `source_site` records which site each message came from.
