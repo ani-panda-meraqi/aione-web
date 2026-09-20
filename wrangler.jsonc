@@ -5,7 +5,9 @@
   "main": "worker.js",
   "assets": {
     "directory": ".",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // Serve /404.html with a 404 status for any unknown path, instead of an empty body.
+    "not_found_handling": "404-page"
   },
   "routes": [
     { "pattern": "aionellc.com", "custom_domain": true }

@@ -3,3 +3,5 @@
 worker.js
 schema.sql
 README.md
+wrangler.jsonc
+.gitignore
