@@ -98,7 +98,7 @@ footer .fine{color:var(--slate);margin-top:12px;font-size:13px;line-height:1.6}
 
 <main class="wrap">
   <h1 class="doc-title">Privacy Policy</h1>
-  <p class="eff">Effective date: June 29, 2026 &nbsp;·&nbsp; Last updated: June 29, 2026</p>
+  <p class="eff">Effective date: June 29, 2026 &nbsp;·&nbsp; Last updated: September 23, 2026</p>
   <hr class="rule">
 
   <p>This Privacy Policy explains how <strong>AiOne LLC</strong> ("AiOne," "we," "us," or "our") collects, uses, shares, and protects personal information in connection with our products and services, including the <strong>Meraqi</strong> AI design platform (the "Service"). Meraqi is a product of AiOne LLC.</p>
@@ -118,8 +118,9 @@ footer .fine{color:var(--slate);margin-top:12px;font-size:13px;line-height:1.6}
   <h2 id="info">1. Information we collect</h2>
   <p>We collect the following categories of personal information:</p>
   <ul>
-    <li><strong>Account information.</strong> Name, email address, password (stored only as an argon2id hash), and authentication identifiers from social login providers (Google, GitHub, Microsoft) if you choose to use them.</li>
+    <li><strong>Account information.</strong> Name, email address, and the identifiers a sign-in provider sends us if you use one. Google and Microsoft are the providers today, and more will be added later. Meraqi does not use passwords. You sign in with one of those providers, or with a one-time 6-digit code sent to your email address or mobile number.</li>
     <li><strong>Contact form submissions.</strong> If you write to us through a contact form on our websites, we collect the name you choose to provide, your email address, the topic you select, and your message, and we use them to respond to you.</li>
+    <li><strong>Beta waitlist.</strong> If you join the waitlist, we collect your email address and note which of our sites you signed up on. We use them only to tell you when your slot opens, and you can ask us to remove you at any time by writing to <a href="mailto:legal@aionellc.com">legal@aionellc.com</a>.</li>
     <li><strong>Profile and workspace data.</strong> Organization or team name, role, brand kits, and preferences.</li>
     <li><strong>Content you create or upload.</strong> Designs, text, prompts, uploaded images and photos, fonts, and related assets.</li>
     <li><strong>Phone number.</strong> If you enable two-factor authentication (2FA) by SMS or use SMS features, we collect and store your mobile number. See <a href="#mobile">Section 2</a>.</li>
@@ -165,12 +166,12 @@ footer .fine{color:var(--slate);margin-top:12px;font-size:13px;line-height:1.6}
   <p>As stated above, SMS opt-in data and consent are excluded from sharing with third parties other than the messaging providers needed to deliver your messages.</p>
 
   <h2 id="ai">5. AI processing</h2>
-  <p>Meraqi's AI features run on infrastructure operated by AiOne. Your prompts, designs, and uploaded images are not transmitted to external third-party AI providers to generate your content. We use your content to train shared AI models only if you expressly opt in.</p>
+  <p>Meraqi's AI features run on infrastructure we operate. Your prompts, designs, and uploaded images are not transmitted to external third-party AI providers to generate your content. We do not use your content to train any AI model.</p>
 
   <h2 id="retention">6. Data retention</h2>
   <ul>
-    <li>Account and content data is retained while your account is active. After account deletion, recoverable data is held for a 30-day window, then permanently removed.</li>
-    <li>Prompts are minimized and purged on a rolling 30-day basis; location metadata (EXIF) is stripped from distributed images.</li>
+    <li>Account and content data is retained while your account is active. An account with no paid plan is treated as dormant after 12 months with no sign-in, and a paid plan that is paused or suspended still counts as active. We email you first, and if you still do not sign in we close the account and erase its content. After account deletion, whether you asked for it or it followed dormancy, recoverable data is held for a 30-day window, then permanently removed.</li>
+    <li>Prompts are stored with email addresses, phone numbers and links removed, and are permanently deleted after 90 days unless you choose to keep a generation; location metadata (EXIF) is stripped from distributed images.</li>
     <li>Security and audit logs are retained for up to 7 years to meet legal and compliance obligations.</li>
     <li>Billing records are retained as required by tax and accounting law.</li>
   </ul>
@@ -180,7 +181,7 @@ footer .fine{color:var(--slate);margin-top:12px;font-size:13px;line-height:1.6}
   <p>To exercise any right, contact us at <a href="mailto:legal@aionellc.com">legal@aionellc.com</a>. We respond within the timeframes required by law (generally within 30 days). We will not discriminate against you for exercising your rights.</p>
 
   <h2 id="security">8. Security</h2>
-  <p>We protect personal information with encryption in transit (TLS 1.3) and at rest (AES-256), hashed credentials (argon2id), scoped access tokens, role-based access control, and append-only audit logging. No method of transmission or storage is completely secure, but we work to protect your information and to notify you of incidents as required by law.</p>
+  <p>We protect personal information with encryption in transit (TLS 1.3) and at rest (AES-256), passwordless sign-in, hashed session tokens (argon2id), scoped access tokens, role-based access control, and append-only audit logging. No method of transmission or storage is completely secure, but we work to protect your information and to notify you of incidents as required by law.</p>
 
   <h2>9. International transfers</h2>
   <p>We are based in the United States and process data there. If you access the Service from outside the U.S., you understand your information may be transferred to and processed in the U.S. Where required, we use appropriate safeguards (such as Standard Contractual Clauses) for international transfers.</p>
